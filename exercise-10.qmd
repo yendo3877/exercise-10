@@ -1,0 +1,175 @@
+---
+title: "exercise-10: Practise Anova"
+author: "Yen Do"
+format: html
+editor: visual
+---
+
+## Preliminaries
+
+```{r}
+# Loading dataset
+library(tidyverse)
+d <- read_csv("https://raw.githubusercontent.com/difiore/ada-datasets/main/AVONETdataset1.csv", col_names = TRUE)
+d <- d |> select(Species1, Family1, Order1, Beak.Length_Culmen, Beak.Width, Beak.Depth, Tarsus.Length, Wing.Length, Tail.Length, Mass, Habitat, Migration, Trophic.Level, Trophic.Niche, Min.Latitude, Centroid.Latitude, Primary.Lifestyle, Range.Size)
+# exploratory data analysis
+library(skimr)
+glimpse(d)
+```
+
+## Challenge 1: One-factor Anova and Inference
+
+### Step 1: Make boxplots
+
+```{r}
+# boxplots of log(Mass) in relation to Trophic.Level
+ggplot(data = d |> drop_na(Trophic.Level), aes(x = Trophic.Level, y = log(Mass))) + geom_boxplot() + geom_jitter()
+
+#boxplots of log(Mass) in relation to Migration
+ggplot(data = d |> drop_na(Migration), aes(x = Migration, y = log(Mass))) + geom_boxplot() + geom_jitter()
+
+#convert the variable Migration
+d <- d |> mutate(Migration = as.factor(Migration))
+```
+
+### Step 2: Linear models
+
+```{r}
+m1 <- lm(log(Mass) ~ Trophic.Level, data = d)
+m2 <- lm(log(Mass) ~ as.factor(Migration), data = d)
+summary(m1)
+summary(m2)
+```
+
+### Step 3: Post-hoc Tukey Honest Significant Differences test
+
+```{r}
+d <- d |> mutate(Trophic.Level = relevel(as.factor(Trophic.Level), ref = "Herbivore"))
+m1 <- lm(log(Mass) ~ Trophic.Level, data = d)
+summary(m1)
+ggplot(data = d |> drop_na(Trophic.Level), aes(x = Trophic.Level, y = log(Mass))) + geom_boxplot()
+
+pf(78.42, df1 = 3, df2 = 11000, lower.tail = FALSE)
+
+(pairwise.t.test(log(d$Mass), d$Trophic.Level, p.adj = "bonferroni"))
+summary(m1)
+m1 <- aov(log(Mass) ~ Trophic.Level, data = d)
+
+original.F <- aov(log(Mass) ~ Trophic.Level, data = d) |>
+    broom::tidy() |>
+    filter(term == "Trophic.Level")
+  
+  (posthoc <- TukeyHSD(m1, which = "Trophic.Level",
+                       conf.level = 0.95))
+```
+
+
+### Step 4: Permutation
+```{r}
+library(infer)
+d <- d |> mutate(logMass = log(Mass))
+permuted.F <- d |>
+  specify(logMass ~ Trophic.Level) |>
+  hypothesize(null = "independence") |>
+  generate(reps = 1000, type = "permute") |>
+  calculate(stat = "F")
+hist(permuted.F$stat)
+
+visualize(permuted.F) +
+  shade_p_value(obs_stat = original.F$statistic, direction = "greater")
+
+# p.value <- permuted.F |> get_p_value(abs_stat = original.F$stat, direction = "greater")
+```
+## Challenge 2
+
+### Step 1: 
+```{r}
+library(dplyr)
+relBeak <- lm(log(d$Beak.Length_Culmen) ~ log(d$Mass), data = d)
+relTarsus <- lm(log(d$Tarsus.Length) ~ log(d$Mass), data =d)
+d <- d |> mutate( relBeak = relBeak$residuals, relTarsus = relTarsus$residuals)
+```
+
+### Step 2: 
+```{r}
+d <- d |> mutate(Primary.Lifestyle = factor(Primary.Lifestyle, level = c("Aeridl", "Aquatic", "Insessorial", "Terrestrial", "Generalist")))
+p1 <- ggplot(data =d |>
+               drop_na(Primary.Lifestyle),
+             aes(x = Primary.Lifestyle,
+                 y = relBeak)) +
+  geom_boxplot() + theme(
+    axis.test.x =
+      element_text(angle = 45,
+                   hjust =1))
+
+d <- d |> mutate( Trophic.Niche = factor(Trophic.Niche, levels = c("Nectarivore", "Herbivore aquatic", "Frugivore", "Granivore", "Herbivore terrestrial", "Aquatic predator", "Invertivore", "Vertivore", "Scarvenger", "Omivore")))
+p2 <- ggplot(data =d |>
+               drop_na(Trophic.Niche),
+             aes(x = Trophic.Niche,
+             y = relTarsus)) +
+  geom_boxplot() + theme(
+    axis.test.x =
+      element_text(angle = 45,
+                   hjust =1))
+p2
+cowplot::plot_grid(p1, p2, nrow  = 1)
+```
+### Step 3: 
+```{r}
+migration <- d |>
+  drop_na(Migration)
+library(mosaic)
+histogram(migration$Range.Size)
+```
+
+### Step 4:
+```{r}
+pass <- d |> filter(Order1 =="Passeriformes")
+
+p3 <- ggplot(data = pass,
+             aes(x = Primary.Lifestyle, y = relBeak)) + geom_boxplot() + geom_jitter(alpha = 0.05) + 
+  facet_wrap(~Trophic.Level) + 
+  theme(axis.test.x =
+                 element_text(angle = 45,
+                              hjust =1)
+             )
+p3
+#
+p4 <- ggplot(data = pass,
+             aes(x = Trophic.Level, y = relBeak)) + geom_boxplot() + geom_jitter(alpha = 0.05) + 
+  theme(axis.test.x =
+          element_text(angle = 45,
+                       hjust =1)
+  )
+p4
+```
+
+### Step 5:
+```{r}
+m8 <- aov(relBeak ~Primary.Lifestyle + Trophic.Level,
+          data = pass)
+summary(m8)
+
+# m8 <- aov(relBeak ~ Primary.Lifestyle + Trophic.Level + Primary.Lifestyle:Trophic.Level data = pass)
+summary(m8)
+```
+
+
+### Step 6:
+```{r}
+m8 <- aov(relBeak ~Primary.Lifestyle * Trophic.Level,
+          data = pass)
+summary(m8)
+```
+
+### Step 7:
+```{r}
+
+```
+
+### Step 8:
+```{r}
+library(car)
+library(jtools)
+```
+
