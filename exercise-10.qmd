@@ -14,8 +14,15 @@ d <- read_csv("https://raw.githubusercontent.com/difiore/ada-datasets/main/AVONE
 d <- d |> select(Species1, Family1, Order1, Beak.Length_Culmen, Beak.Width, Beak.Depth, Tarsus.Length, Wing.Length, Tail.Length, Mass, Habitat, Migration, Trophic.Level, Trophic.Niche, Min.Latitude, Centroid.Latitude, Primary.Lifestyle, Range.Size)
 # exploratory data analysis
 library(skimr)
-glimpse(d)
+skim(d)
+categorical_vars <- c("Species1", "Family1", "Order1", "Habitat", "Migration", "Trophic.Level", "Trophic.Niche", "Primary.Lifestyle")
+numeric_vars <- setdiff(names(d), categorical_vars)
 ```
+The categorical variables in the dataset are: Species1, Family1, Order1, Habitat, 
+Migration, Trophic.Level, Trophic.Niche, Primary.Lifestyle
+
+The numeric variables in the dataset are: Beak.Length_Culmen, Beak.Width, Beak.Depth
+Tarsus.Length, Wing.Length, Tail.Length, Mass, Min.Latitude, Max.Latitude, Centroid.Latitude, Range.Size.
 
 ## Challenge 1: One-factor Anova and Inference
 
@@ -36,35 +43,47 @@ d <- d |> mutate(Migration = as.factor(Migration))
 
 ```{r}
 m1 <- lm(log(Mass) ~ Trophic.Level, data = d)
-m2 <- lm(log(Mass) ~ as.factor(Migration), data = d)
 summary(m1)
+
+m2 <- lm(log(Mass) ~ as.factor(Migration), data = d)
 summary(m2)
+
+#Relevel and assess differences among the remaining pair of Migration categories
+d$Migration <- relevel(d$Migration, ref = "2")
+m3 <- lm(log(Mass) ~ as.factor(Migration), data = d)
+summary(m3)
 ```
+Is log(Mass) associated with either Trophic.Level or Migration category? 
+Answer: log(Mass) is significantly associated with both Trophic.Level (F-statistic = 78.42, p-value < < 2.2e-16) and Migration (F-statistic = 144.5, p-value 2.2e-16). Since the p-value is much smaller than 0.05, we reject the null hypothesis.
+
+Given the regression coefficients returned for your Migration model, which Migration categor(ies) are different than the reference level? What level is the reference level? Relevel and assess differences among the remaining pair of Migration categories.
+
+The Intercept represents the reference category, which is Migration = 1.
+Among 3 migration categories, 
+Migration 2: estimate coefficients = 0.75971, p-value < 2e - 16 which means Migration 2 is significant different to Migration 1. Birds in Migration 2 is bigger than Migration 1.
+
+Migration 3: estimate coefficients = 0.37647, p-value = 3.02e - 13 which means Migration 3 is significant different to Migration 1. Birds in Migration 3 is bigger than Migration 1.
+
+After releveling reference category to Migration 2, 
+estimate coefficients of migration 1 is -0.75971, p-value < 2e - 16. Estimate coefficients of migration 3 = -0.38324, p-value 6.67e-09. Since both coefficients are negative, conclution is birds in migration 1 and 3 are smaller than Migration 2, however, the difference between Migration 3 and Migration 1 is smaller than Migration 1 and 2.
 
 ### Step 3: Post-hoc Tukey Honest Significant Differences test
 
 ```{r}
-d <- d |> mutate(Trophic.Level = relevel(as.factor(Trophic.Level), ref = "Herbivore"))
-m1 <- lm(log(Mass) ~ Trophic.Level, data = d)
+(pairwise.t.test(log(d$Mass), d$Migration, p.adj = "bonferroni"))
 summary(m1)
-ggplot(data = d |> drop_na(Trophic.Level), aes(x = Trophic.Level, y = log(Mass))) + geom_boxplot()
+m1 <- aov(log(Mass) ~ Migration, data = d)
 
-pf(78.42, df1 = 3, df2 = 11000, lower.tail = FALSE)
-
-(pairwise.t.test(log(d$Mass), d$Trophic.Level, p.adj = "bonferroni"))
-summary(m1)
-m1 <- aov(log(Mass) ~ Trophic.Level, data = d)
-
-original.F <- aov(log(Mass) ~ Trophic.Level, data = d) |>
+original.F <- aov(log(Mass) ~ Migration, data = d) |>
     broom::tidy() |>
-    filter(term == "Trophic.Level")
+    filter(term == "Migration")
   
-  (posthoc <- TukeyHSD(m1, which = "Trophic.Level",
+  (posthoc <- TukeyHSD(m1, which = "Migration",
                        conf.level = 0.95))
 ```
 
-
 ### Step 4: Permutation
+
 ```{r}
 library(infer)
 d <- d |> mutate(logMass = log(Mass))
@@ -78,11 +97,14 @@ hist(permuted.F$stat)
 visualize(permuted.F) +
   shade_p_value(obs_stat = original.F$statistic, direction = "greater")
 
-# p.value <- permuted.F |> get_p_value(abs_stat = original.F$stat, direction = "greater")
+p.value <- mean(permuted.F$stat >= original.F)
+p.value
 ```
+p.value: 0.1666667
 ## Challenge 2
 
-### Step 1: 
+### Step 1:
+
 ```{r}
 library(dplyr)
 relBeak <- lm(log(d$Beak.Length_Culmen) ~ log(d$Mass), data = d)
@@ -90,7 +112,8 @@ relTarsus <- lm(log(d$Tarsus.Length) ~ log(d$Mass), data =d)
 d <- d |> mutate( relBeak = relBeak$residuals, relTarsus = relTarsus$residuals)
 ```
 
-### Step 2: 
+### Step 2:
+
 ```{r}
 d <- d |> mutate(Primary.Lifestyle = factor(Primary.Lifestyle, level = c("Aeridl", "Aquatic", "Insessorial", "Terrestrial", "Generalist")))
 p1 <- ggplot(data =d |>
@@ -114,18 +137,31 @@ p2 <- ggplot(data =d |>
 p2
 cowplot::plot_grid(p1, p2, nrow  = 1)
 ```
-### Step 3: 
+
+### Step 3: ANOVA for Range.Size vs Migration
+
 ```{r}
+d$Migration <- relevel(d$Migration, ref = "1")
 migration <- d |>
   drop_na(Migration)
+m4 <- lm(log(Range.Size) ~ Migration, data = migration)
+summary(m4)
 library(mosaic)
 histogram(migration$Range.Size)
+tukey_range <- TukeyHSD(aov(log(Range.Size) ~ Migration, data = migration))
+tukey_range
 ```
+Answer: Migration 1 is significantly different from Migration 2.
+Migration 1 is significantly different from Migration 3.
+Migration 2 is significantly different from Migration 3.
 
-### Step 4:
+### Step 4: one-factor ANOVA between relative beak length and Primary.Lifestyle or Trophic.Level
+
 ```{r}
 pass <- d |> filter(Order1 =="Passeriformes")
-
+library(ggplot2)
+#boxplot of relative beak length and Primary.Lifestyle
+#
 p3 <- ggplot(data = pass,
              aes(x = Primary.Lifestyle, y = relBeak)) + geom_boxplot() + geom_jitter(alpha = 0.05) + 
   facet_wrap(~Trophic.Level) + 
@@ -133,7 +169,7 @@ p3 <- ggplot(data = pass,
                  element_text(angle = 45,
                               hjust =1)
              )
-p3
+
 #
 p4 <- ggplot(data = pass,
              aes(x = Trophic.Level, y = relBeak)) + geom_boxplot() + geom_jitter(alpha = 0.05) + 
@@ -141,10 +177,10 @@ p4 <- ggplot(data = pass,
           element_text(angle = 45,
                        hjust =1)
   )
-p4
 ```
 
 ### Step 5:
+
 ```{r}
 m8 <- aov(relBeak ~Primary.Lifestyle + Trophic.Level,
           data = pass)
@@ -154,8 +190,8 @@ summary(m8)
 summary(m8)
 ```
 
-
 ### Step 6:
+
 ```{r}
 m8 <- aov(relBeak ~Primary.Lifestyle * Trophic.Level,
           data = pass)
@@ -163,13 +199,14 @@ summary(m8)
 ```
 
 ### Step 7:
+
 ```{r}
 
 ```
 
 ### Step 8:
+
 ```{r}
 library(car)
 library(jtools)
 ```
-
