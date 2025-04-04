@@ -22,11 +22,10 @@ skim(d) |>
 categorical_vars <- c("Species1", "Family1", "Order1", "Habitat", "Migration", "Trophic.Level", "Trophic.Niche", "Primary.Lifestyle")
 numeric_vars <- setdiff(names(d), categorical_vars)
 ```
-The categorical variables in the dataset are: Species1, Family1, Order1, Habitat, 
-Migration, Trophic.Level, Trophic.Niche, Primary.Lifestyle
 
-The numeric variables in the dataset are: Beak.Length_Culmen, Beak.Width, Beak.Depth
-Tarsus.Length, Wing.Length, Tail.Length, Mass, Min.Latitude, Max.Latitude, Centroid.Latitude, Range.Size.
+The categorical variables in the dataset are: Species1, Family1, Order1, Habitat, Migration, Trophic.Level, Trophic.Niche, Primary.Lifestyle
+
+The numeric variables in the dataset are: Beak.Length_Culmen, Beak.Width, Beak.Depth Tarsus.Length, Wing.Length, Tail.Length, Mass, Min.Latitude, Max.Latitude, Centroid.Latitude, Range.Size.
 
 ## Challenge 1: One-factor Anova and Inference
 
@@ -57,19 +56,16 @@ d$Migration <- relevel(d$Migration, ref = "2")
 m3 <- lm(log(Mass) ~ as.factor(Migration), data = d)
 summary(m3)
 ```
-Is log(Mass) associated with either Trophic.Level or Migration category? 
-Answer: Since the p-value is much smaller than 0.05, log(Mass) is significantly associated with both Trophic.Level (F-statistic = 78.42, p-value < < 2.2e-16) and Migration (F-statistic = 144.5, p-value 2.2e-16). 
+
+Is log(Mass) associated with either Trophic.Level or Migration category? Answer: Since the p-value is much smaller than 0.05, log(Mass) is significantly associated with both Trophic.Level (F-statistic = 78.42, p-value \< \< 2.2e-16) and Migration (F-statistic = 144.5, p-value 2.2e-16).
 
 Given the regression coefficients returned for your Migration model, which Migration categor(ies) are different than the reference level? What level is the reference level? Relevel and assess differences among the remaining pair of Migration categories.
 
-The Intercept represents the reference category, which is Migration = 1.
-Among 3 migration categories, 
-Migration 2: estimate coefficients = 0.75971, p-value < 2e - 16 which means Migration 2 is significant different to Migration 1. Birds in Migration 2 is bigger than Migration 1.
+The Intercept represents the reference category, which is Migration = 1. Among 3 migration categories, Migration 2: estimate coefficients = 0.75971, p-value \< 2e - 16 which means Migration 2 is significant different to Migration 1. Birds in Migration 2 is bigger than Migration 1.
 
 Migration 3: estimate coefficients = 0.37647, p-value = 3.02e - 13 which means Migration 3 is significant different to Migration 1. Birds in Migration 3 is bigger than Migration 1.
 
-After releveling reference category to Migration 2, 
-coefficients of migration 1 is -0.75971, p-value < 2e - 16. Estimate coefficients of migration 3 = -0.38324, p-value 6.67e-09. Since both coefficients are negative, conclution is birds in migration 1 and 3 are smaller than Migration 2, however, the difference between Migration 3 and Migration 1 is smaller than Migration 1 and 2.
+After releveling reference category to Migration 2, coefficients of migration 1 is -0.75971, p-value \< 2e - 16. Estimate coefficients of migration 3 = -0.38324, p-value 6.67e-09. Since both coefficients are negative, conclution is birds in migration 1 and 3 are smaller than Migration 2, however, the difference between Migration 3 and Migration 1 is smaller than Migration 1 and 2.
 
 ### Step 3: Post-hoc Tukey Honest Significant Differences test
 
@@ -85,13 +81,16 @@ original.F <- aov(log(Mass) ~ Migration, data = d) |>
   (posthoc <- TukeyHSD(m1, which = "Migration",
                        conf.level = 0.95))
 ```
+
 All Migration categories differ "significantly" from one another.
 
 ### Step 4: Permutation
 
 ```{r}
 library(infer)
-d <- d |> mutate(logMass = log(Mass))
+d <- d |>
+  drop_na(Trophic.Level, Mass) |>
+  mutate(logMass = log(Mass))
 permuted.F <- d |>
   specify(logMass ~ Trophic.Level) |>
   hypothesize(null = "independence") |>
@@ -106,7 +105,9 @@ p.value <- permuted.F |>
     get_p_value(obs_stat = original.F$statistic, direction = "greater")
 p.value
 ```
-p.value = 0
+
+p.value = 0 
+
 ## Challenge 2
 
 ### Step 1:
@@ -121,25 +122,19 @@ d <- d |> mutate( relBeak = relBeak$residuals, relTarsus = relTarsus$residuals)
 ### Step 2:
 
 ```{r}
-d <- d |> mutate(Primary.Lifestyle = factor(Primary.Lifestyle, level = c("Aeridl", "Aquatic", "Insessorial", "Terrestrial", "Generalist")))
+d <- d |> mutate(Primary.Lifestyle = factor(Primary.Lifestyle, level = c("Aerial", "Aquatic", "Insessorial", "Terrestrial", "Generalist")))
 p1 <- ggplot(data =d |>
                drop_na(Primary.Lifestyle),
              aes(x = Primary.Lifestyle,
-                 y = relBeak)) +
-  geom_boxplot() + theme(
-    axis.test.x =
-      element_text(angle = 45,
-                   hjust =1))
+                 y = relBeak)) +  geom_boxplot() + theme(axis.text.x = element_text(angle = 45, hjust =1))
 
 d <- d |> mutate( Trophic.Niche = factor(Trophic.Niche, levels = c("Nectarivore", "Herbivore aquatic", "Frugivore", "Granivore", "Herbivore terrestrial", "Aquatic predator", "Invertivore", "Vertivore", "Scarvenger", "Omivore")))
+
 p2 <- ggplot(data =d |>
                drop_na(Trophic.Niche),
              aes(x = Trophic.Niche,
              y = relTarsus)) +
-  geom_boxplot() + theme(
-    axis.test.x =
-      element_text(angle = 45,
-                   hjust =1))
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 45, hjust =1))
 p2
 cowplot::plot_grid(p1, p2, nrow  = 1)
 ```
@@ -154,14 +149,12 @@ m4 <- lm(log(Range.Size) ~ Migration, data = migration)
 summary(m4)
 library(mosaic)
 histogram(migration$Range.Size)
+histogram(log(migration$Range.Size))
 tukey_range <- TukeyHSD(aov(log(Range.Size) ~ Migration, data = migration))
 tukey_range
 ```
-Answer: The F-statistic = 520.3, p < 2.2e-16 suggests that range size is significantly associated with migration style.
-The Multiple R-squared = 0.0869, meaning 8.69% of the variance in log(Range.Size) is explained by Migration behavior.
-Migration 1 is significantly different from Migration 2.
-Migration 1 is significantly different from Migration 3.
-Migration 2 is significantly different from Migration 3.
+
+Answer: The F-statistic = 520.3, p \< 2.2e-16 suggests that range size is significantly associated with migration style. The Multiple R-squared = 0.0869, meaning 8.69% of the variance in log(Range.Size) is explained by Migration behavior. Migration 1 is significantly different from Migration 2. Migration 1 is significantly different from Migration 3. Migration 2 is significantly different from Migration 3.
 
 ### Step 4: one-factor ANOVA between relative beak length and Primary.Lifestyle or Trophic.Level
 
@@ -171,7 +164,6 @@ library(ggplot2)
 #boxplot of relative beak length and Primary.Lifestyle
 p3 <- ggplot(data = pass,
              aes(x = Primary.Lifestyle, y = relBeak)) + geom_boxplot() + geom_jitter(alpha = 0.05) + 
-  facet_wrap(~Trophic.Level) + 
   theme(axis.test.x =
                  element_text(angle = 45,
                               hjust =1)
@@ -192,16 +184,15 @@ p4
 # model for Trophic.Level
 m6 <- lm(relBeak ~ Trophic.Level, data = pass)
 summary(m6)
-# by combination of predictors
 
+# by combination of predictors
 p5 <- ggplot(data = pass, aes(x = Primary.Lifestyle, y = relBeak, fill = Trophic.Level)) +
   geom_boxplot(position = "dodge") +
   labs(title = "Relative Beak Length by Lifestyle and Trophic Level")
 p5
 ```
-Interpret the model output:
-Model 5 (m5): F-statistic = 78.57 with a p-value < 2.2e-16 indicates there is a significant association between Primary.Lifestyle and relative beak length. Terrestrial and Generalist birds have significantly shorter relative beak lengths compared to the reference category ("Aeridl"), with p-values < 2e-16.
-Model 6 (m6): F-statistic = 174 with a p-value < 2.2e-16 indicates there is a significant association between Trophic.Level and relative beak length. Herbivorous birds have significantly shorter beaks than the reference category ("Carnivores"), with a p-value < 2e-16. Omnivorous birds have longer beaks than the reference category (p = 0.00675).
+
+Interpret the model output: Model 5 (m5): F-statistic = 78.57 with a p-value \< 2.2e-16 indicates there is a significant association between Primary.Lifestyle and relative beak length. Terrestrial and Generalist birds have significantly shorter relative beak lengths compared to the reference category ("Aerial"), with p-values \< 2e-16. Model 6 (m6): F-statistic = 174 with a p-value \< 2.2e-16 indicates there is a significant association between Trophic.Level and relative beak length. Herbivorous birds have significantly shorter beaks than the reference category ("Carnivores"), with a p-value \< 2e-16. Omnivorous birds have longer beaks than the reference category (p = 0.00675).
 
 ### Step 5:
 
@@ -211,10 +202,8 @@ m7 <- lm(relBeak ~ Primary.Lifestyle + Trophic.Level,
 summary(m7)
 
 ```
-Conclusion: Overall Model Significance
-The F-statistic is 142.2, p-value < 2.2e-16 suggests that Primary.Lifestyle and Trophic.Level significantly influence Relative Beak Length. The low R-squared (0.08034) suggests that only about 8% of the variation in relative beak length is explained by these predictors. 
-Base level is Aeridl
-Effect of Primary.Lifestyle: Terrestrial birds have a significantly lower relative beak length compared to the reference category. Generalist birds also have a significantly lower relative beak length.
+
+Conclusion: Overall Model Significance The F-statistic is 163.4, p-value \< 2.2e-16 suggests that Primary.Lifestyle and Trophic.Level significantly influence Relative Beak Length. The low R-squared (0.11) suggests that only about 11% of the variation in relative beak length is explained by these predictors. Base level is Aeridl Effect of Primary.Lifestyle: Terrestrial birds have a significantly lower relative beak length compared to the reference category. Generalist birds also have a significantly lower relative beak length.
 
 Effect of Trophic.Level: Herbivores have significantly shorter relative beak lengths than the reference category ("Carnivores"). Omnivores show a weak association (p = 0.06), meaning their effect on beak length may not be as strong.
 
@@ -224,21 +213,18 @@ Effect of Trophic.Level: Herbivores have significantly shorter relative beak len
 m8 <- lm(relBeak ~ Primary.Lifestyle + Trophic.Level + Primary.Lifestyle:Trophic.Level, data = pass)
 summary(m8)
 ```
-Interpret Model:
-Residual standard error (0.2067) is slightly lower than Step 5, indicating a marginal improvement in model fit. Multiple R-squared (0.1074) is higher than Step 5, suggesting that adding interactions explains more variation.
 
-F-statistic: 97.79, p-value < 2.2e-16, confirming that at least one predictor significantly contributes to the model.
+Interpret Model: Residual standard error (0.2066) is slightly lower than Step 5, indicating a marginal improvement in model fit. Multiple R-squared (0.1358) is higher than Step 5, suggesting that adding interactions explains more variation.
 
-Primary.Lifestyle: Aeridl is the base level.
-Terrestrial birds do not significantly differ from the base level (p = 0.899).
-Generalist birds have significantly shorter beak lengths compared to the base level (p = 0.021).
+F-statistic: 115.3, p-value \< 2.2e-16, confirming that at least one predictor significantly contributes to the model.
 
-Trophic.Level: Carnivore is the base level. Herbivores have significantly shorter beaks than the base level (p < 2e-16). Omnivores have significantly longer beaks than the base level (p = 5.18e-09).
+Primary.Lifestyle: Aerial is the base level. Insessorial, Terrestrial and Generalist birds are significant different from the base level (p \<0.05).
 
-2. Interaction Effects: effect of Trophic.Level depends on Primary.Lifestyle:
+Trophic.Level: Carnivore is the base level. Herbivores have significantly shorter beaks than the base level (p \< 2e-16). Omnivores is not significant different from base level (p = 0.5).
 
-Terrestrial × Herbivore(p < 2e-16), Generalist × Herbivore (p = 8.77e-12), Terrestrial × Omnivore (p < 2e-16), indicating , meaning interaction of Trophic.Level and Primary.Lifestyle have significantly shorter beaks than expected from the individual effects alone.
-Generalist × Omnivore: Significant negative effect (p = 0.00348), though smaller than the other interactions.
+2.  Interaction Effects: effect of Trophic.Level depends on Primary.Lifestyle:
+
+Terrestrial × Omnivore (p = 0.051), Insessorial × Herbivore (p = 8.65e-12), Insessorial x Omnivore (p = 0.00345), indicating , meaning interaction of Trophic.Level and Primary.Lifestyle have significantly different beaks than expected from the individual effects alone. Terrestrial x Herbivore: p-value = 0.051\> 0.05 not significant interaction.
 
 ### Step 7:
 
@@ -302,7 +288,7 @@ hist(d$relBeak[d$Primary.Lifestyle == "Generalist"], main = "Generalist", xlab =
 qqnorm(d$relBeak[d$Primary.Lifestyle == "Generalist"])
 
 ```
+
 Answer: the ratio of max-to-min of standard deviations of relative beak length (relBeak) within groups of Trophic.Level and Primary.Lifestyle are 1.34 and 1.24, both smaller than 2, then we can say variances in across groups are roughly equal.
 
-RelBeak from whole observation has normal distribution.
-RelBeak within groups has normal distribution (Trophic.Level: Carnivore, Omnivore, Herbivore; Primary.Lifestyle: Terrestrial, Insessorial, Generalist). Remains groups has abnormal distribution.
+RelBeak from whole observation has normal distribution. RelBeak within groups has normal distribution (Trophic.Level: Carnivore, Omnivore, Herbivore; Primary.Lifestyle: Terrestrial, Insessorial, Generalist). Remains groups has abnormal distribution.

@@ -708,16 +708,15 @@ $Migration
 <h3 class="anchored" data-anchor-id="step-4-permutation">Step 4: Permutation</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(infer)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">logMass =</span> <span class="fu">log</span>(Mass))</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>permuted.F <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">specify</span>(logMass <span class="sc">~</span> Trophic.Level) <span class="sc">|&gt;</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hypothesize</span>(<span class="at">null =</span> <span class="st">"independence"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">generate</span>(<span class="at">reps =</span> <span class="dv">1000</span>, <span class="at">type =</span> <span class="st">"permute"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">calculate</span>(<span class="at">stat =</span> <span class="st">"F"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 5 rows containing missing values.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(permuted.F<span class="sc">$</span>stat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(Trophic.Level, Mass) <span class="sc">|&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">logMass =</span> <span class="fu">log</span>(Mass))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>permuted.F <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">specify</span>(logMass <span class="sc">~</span> Trophic.Level) <span class="sc">|&gt;</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hypothesize</span>(<span class="at">null =</span> <span class="st">"independence"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">generate</span>(<span class="at">reps =</span> <span class="dv">1000</span>, <span class="at">type =</span> <span class="st">"permute"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">calculate</span>(<span class="at">stat =</span> <span class="st">"F"</span>)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(permuted.F<span class="sc">$</span>stat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -725,8 +724,8 @@ $Migration
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">visualize</span>(permuted.F) <span class="sc">+</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">shade_p_value</span>(<span class="at">obs_stat =</span> original.F<span class="sc">$</span>statistic, <span class="at">direction =</span> <span class="st">"greater"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">visualize</span>(permuted.F) <span class="sc">+</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">shade_p_value</span>(<span class="at">obs_stat =</span> original.F<span class="sc">$</span>statistic, <span class="at">direction =</span> <span class="st">"greater"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -734,14 +733,14 @@ $Migration
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>p.value <span class="ot">&lt;-</span> permuted.F <span class="sc">|&gt;</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">get_p_value</span>(<span class="at">obs_stat =</span> original.F<span class="sc">$</span>statistic, <span class="at">direction =</span> <span class="st">"greater"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>p.value <span class="ot">&lt;-</span> permuted.F <span class="sc">|&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">get_p_value</span>(<span class="at">obs_stat =</span> original.F<span class="sc">$</span>statistic, <span class="at">direction =</span> <span class="st">"greater"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Please be cautious in reporting a p-value of 0. This result is an approximation
 based on the number of `reps` chosen in the `generate()` step.
 ℹ See `get_p_value()` (`?infer::get_p_value()`) for more information.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>p.value</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>p.value</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 1
   p_value
@@ -749,44 +748,37 @@ based on the number of `reps` chosen in the `generate()` step.
 1       0</code></pre>
 </div>
 </div>
-<p>p.value = 0 ## Challenge 2</p>
+<p>p.value = 0</p>
 </section>
+</section>
+<section id="challenge-2" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-2">Challenge 2</h2>
 <section id="step-1" class="level3">
 <h3 class="anchored" data-anchor-id="step-1">Step 1:</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>relBeak <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(d<span class="sc">$</span>Beak.Length_Culmen) <span class="sc">~</span> <span class="fu">log</span>(d<span class="sc">$</span>Mass), <span class="at">data =</span> d)</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>relTarsus <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(d<span class="sc">$</span>Tarsus.Length) <span class="sc">~</span> <span class="fu">log</span>(d<span class="sc">$</span>Mass), <span class="at">data =</span>d)</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>( <span class="at">relBeak =</span> relBeak<span class="sc">$</span>residuals, <span class="at">relTarsus =</span> relTarsus<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>relBeak <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(d<span class="sc">$</span>Beak.Length_Culmen) <span class="sc">~</span> <span class="fu">log</span>(d<span class="sc">$</span>Mass), <span class="at">data =</span> d)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>relTarsus <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(d<span class="sc">$</span>Tarsus.Length) <span class="sc">~</span> <span class="fu">log</span>(d<span class="sc">$</span>Mass), <span class="at">data =</span>d)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>( <span class="at">relBeak =</span> relBeak<span class="sc">$</span>residuals, <span class="at">relTarsus =</span> relTarsus<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="step-2" class="level3">
 <h3 class="anchored" data-anchor-id="step-2">Step 2:</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">Primary.Lifestyle =</span> <span class="fu">factor</span>(Primary.Lifestyle, <span class="at">level =</span> <span class="fu">c</span>(<span class="st">"Aeridl"</span>, <span class="st">"Aquatic"</span>, <span class="st">"Insessorial"</span>, <span class="st">"Terrestrial"</span>, <span class="st">"Generalist"</span>)))</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span>d <span class="sc">|&gt;</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>               <span class="fu">drop_na</span>(Primary.Lifestyle),</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Primary.Lifestyle,</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> relBeak)) <span class="sc">+</span></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span> <span class="fu">theme</span>(</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.test.x =</span></span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>,</span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">hjust =</span><span class="dv">1</span>))</span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>( <span class="at">Trophic.Niche =</span> <span class="fu">factor</span>(Trophic.Niche, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Nectarivore"</span>, <span class="st">"Herbivore aquatic"</span>, <span class="st">"Frugivore"</span>, <span class="st">"Granivore"</span>, <span class="st">"Herbivore terrestrial"</span>, <span class="st">"Aquatic predator"</span>, <span class="st">"Invertivore"</span>, <span class="st">"Vertivore"</span>, <span class="st">"Scarvenger"</span>, <span class="st">"Omivore"</span>)))</span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span>d <span class="sc">|&gt;</span></span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>               <span class="fu">drop_na</span>(Trophic.Niche),</span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Trophic.Niche,</span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>             <span class="at">y =</span> relTarsus)) <span class="sc">+</span></span>
-<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span> <span class="fu">theme</span>(</span>
-<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.test.x =</span></span>
-<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>,</span>
-<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>                   <span class="at">hjust =</span><span class="dv">1</span>))</span>
-<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in plot_theme(plot): The `axis.test.x` theme element is not defined in
-the element hierarchy.</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">Primary.Lifestyle =</span> <span class="fu">factor</span>(Primary.Lifestyle, <span class="at">level =</span> <span class="fu">c</span>(<span class="st">"Aerial"</span>, <span class="st">"Aquatic"</span>, <span class="st">"Insessorial"</span>, <span class="st">"Terrestrial"</span>, <span class="st">"Generalist"</span>)))</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span>d <span class="sc">|&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>               <span class="fu">drop_na</span>(Primary.Lifestyle),</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Primary.Lifestyle,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> relBeak)) <span class="sc">+</span>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span><span class="dv">1</span>))</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>( <span class="at">Trophic.Niche =</span> <span class="fu">factor</span>(Trophic.Niche, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Nectarivore"</span>, <span class="st">"Herbivore aquatic"</span>, <span class="st">"Frugivore"</span>, <span class="st">"Granivore"</span>, <span class="st">"Herbivore terrestrial"</span>, <span class="st">"Aquatic predator"</span>, <span class="st">"Invertivore"</span>, <span class="st">"Vertivore"</span>, <span class="st">"Scarvenger"</span>, <span class="st">"Omivore"</span>)))</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span>d <span class="sc">|&gt;</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>               <span class="fu">drop_na</span>(Trophic.Niche),</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Trophic.Niche,</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">y =</span> relTarsus)) <span class="sc">+</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span><span class="dv">1</span>))</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -794,11 +786,7 @@ the element hierarchy.</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(p1, p2, <span class="at">nrow  =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in plot_theme(plot): The `axis.test.x` theme element is not defined in the element hierarchy.
-The `axis.test.x` theme element is not defined in the element hierarchy.</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(p1, p2, <span class="at">nrow  =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -811,11 +799,11 @@ The `axis.test.x` theme element is not defined in the element hierarchy.</code><
 <section id="step-3-anova-for-range.size-vs-migration" class="level3">
 <h3 class="anchored" data-anchor-id="step-3-anova-for-range.size-vs-migration">Step 3: ANOVA for Range.Size vs Migration</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>Migration <span class="ot">&lt;-</span> <span class="fu">relevel</span>(d<span class="sc">$</span>Migration, <span class="at">ref =</span> <span class="st">"1"</span>)</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>migration <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(Migration)</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>m4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(Range.Size) <span class="sc">~</span> Migration, <span class="at">data =</span> migration)</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>Migration <span class="ot">&lt;-</span> <span class="fu">relevel</span>(d<span class="sc">$</span>Migration, <span class="at">ref =</span> <span class="st">"1"</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>migration <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(Migration)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>m4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(Range.Size) <span class="sc">~</span> Migration, <span class="at">data =</span> migration)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -838,7 +826,7 @@ Residual standard error: 2.785 on 10934 degrees of freedom
 Multiple R-squared:  0.0869,    Adjusted R-squared:  0.08674 
 F-statistic: 520.3 on 2 and 10934 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mosaic)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mosaic)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Registered S3 method overwritten by 'mosaic':
   method                           from   
@@ -894,7 +882,7 @@ Attaching package: 'mosaic'</code></pre>
 
     max, mean, min, prod, range, sample, sum</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">histogram</span>(migration<span class="sc">$</span>Range.Size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">histogram</span>(migration<span class="sc">$</span>Range.Size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -902,8 +890,16 @@ Attaching package: 'mosaic'</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>tukey_range <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(<span class="fu">aov</span>(<span class="fu">log</span>(Range.Size) <span class="sc">~</span> Migration, <span class="at">data =</span> migration))</span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>tukey_range</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">histogram</span>(<span class="fu">log</span>(migration<span class="sc">$</span>Range.Size))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="exercise-10_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>tukey_range <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(<span class="fu">aov</span>(<span class="fu">log</span>(Range.Size) <span class="sc">~</span> Migration, <span class="at">data =</span> migration))</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>tukey_range</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Tukey multiple comparisons of means
     95% family-wise confidence level
@@ -922,17 +918,16 @@ $Migration
 <section id="step-4-one-factor-anova-between-relative-beak-length-and-primary.lifestyle-or-trophic.level" class="level3">
 <h3 class="anchored" data-anchor-id="step-4-one-factor-anova-between-relative-beak-length-and-primary.lifestyle-or-trophic.level">Step 4: one-factor ANOVA between relative beak length and Primary.Lifestyle or Trophic.Level</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>pass <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">filter</span>(Order1 <span class="sc">==</span><span class="st">"Passeriformes"</span>)</span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="co">#boxplot of relative beak length and Primary.Lifestyle</span></span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> pass,</span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Primary.Lifestyle, <span class="at">y =</span> relBeak)) <span class="sc">+</span> <span class="fu">geom_boxplot</span>() <span class="sc">+</span> <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.05</span>) <span class="sc">+</span> </span>
-<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Trophic.Level) <span class="sc">+</span> </span>
-<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.test.x =</span></span>
-<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>,</span>
-<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>                              <span class="at">hjust =</span><span class="dv">1</span>)</span>
-<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>             )</span>
-<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>p3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>pass <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">filter</span>(Order1 <span class="sc">==</span><span class="st">"Passeriformes"</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="co">#boxplot of relative beak length and Primary.Lifestyle</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> pass,</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Primary.Lifestyle, <span class="at">y =</span> relBeak)) <span class="sc">+</span> <span class="fu">geom_boxplot</span>() <span class="sc">+</span> <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.05</span>) <span class="sc">+</span> </span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.test.x =</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>,</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>                              <span class="at">hjust =</span><span class="dv">1</span>)</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>             )</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>p3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in plot_theme(plot): The `axis.test.x` theme element is not defined in
 the element hierarchy.</code></pre>
@@ -944,9 +939,9 @@ the element hierarchy.</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model for Primary.Lifestyle</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>m5 <span class="ot">&lt;-</span> <span class="fu">lm</span>(relBeak <span class="sc">~</span> Primary.Lifestyle, <span class="at">data =</span> pass)</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model for Primary.Lifestyle</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>m5 <span class="ot">&lt;-</span> <span class="fu">lm</span>(relBeak <span class="sc">~</span> Primary.Lifestyle, <span class="at">data =</span> pass)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -954,29 +949,29 @@ lm(formula = relBeak ~ Primary.Lifestyle, data = pass)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--0.63137 -0.13811 -0.01688  0.11280  1.22408 
+-0.63134 -0.13797 -0.01718  0.11180  1.22404 
 
 Coefficients:
-                              Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)                   0.003917   0.003171   1.235    0.217    
-Primary.LifestyleTerrestrial -0.074177   0.007078 -10.480   &lt;2e-16 ***
-Primary.LifestyleGeneralist  -0.074159   0.008734  -8.491   &lt;2e-16 ***
+                             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                  -0.34953    0.02158  -16.20   &lt;2e-16 ***
+Primary.LifestyleInsessorial  0.35341    0.02181   16.20   &lt;2e-16 ***
+Primary.LifestyleTerrestrial  0.27921    0.02249   12.42   &lt;2e-16 ***
+Primary.LifestyleGeneralist   0.27924    0.02306   12.11   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.2161 on 6511 degrees of freedom
-  (100 observations deleted due to missingness)
-Multiple R-squared:  0.02357,   Adjusted R-squared:  0.02327 
-F-statistic: 78.57 on 2 and 6511 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 0.2158 on 6610 degrees of freedom
+Multiple R-squared:  0.05582,   Adjusted R-squared:  0.05539 
+F-statistic: 130.3 on 3 and 6610 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co">#boxplot of relative beak length and Trophic.Level</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> pass,</span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Trophic.Level, <span class="at">y =</span> relBeak)) <span class="sc">+</span> <span class="fu">geom_boxplot</span>() <span class="sc">+</span> <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.05</span>) <span class="sc">+</span> </span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.test.x =</span></span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>          <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>,</span>
-<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">hjust =</span><span class="dv">1</span>)</span>
-<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>p4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co">#boxplot of relative beak length and Trophic.Level</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> pass,</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Trophic.Level, <span class="at">y =</span> relBeak)) <span class="sc">+</span> <span class="fu">geom_boxplot</span>() <span class="sc">+</span> <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.05</span>) <span class="sc">+</span> </span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.test.x =</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>          <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>,</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">hjust =</span><span class="dv">1</span>)</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>p4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in plot_theme(plot): The `axis.test.x` theme element is not defined in
 the element hierarchy.</code></pre>
@@ -988,9 +983,9 @@ the element hierarchy.</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model for Trophic.Level</span></span>
-<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>m6 <span class="ot">&lt;-</span> <span class="fu">lm</span>(relBeak <span class="sc">~</span> Trophic.Level, <span class="at">data =</span> pass)</span>
-<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model for Trophic.Level</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>m6 <span class="ot">&lt;-</span> <span class="fu">lm</span>(relBeak <span class="sc">~</span> Trophic.Level, <span class="at">data =</span> pass)</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -998,26 +993,25 @@ lm(formula = relBeak ~ Trophic.Level, data = pass)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--0.67045 -0.13692 -0.02063  0.11129  1.23116 
+-0.67044 -0.13688 -0.02066  0.11132  1.23113 
 
 Coefficients:
                         Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)            -0.003170   0.003501  -0.906  0.36518    
-Trophic.LevelHerbivore -0.118713   0.006956 -17.066  &lt; 2e-16 ***
-Trophic.LevelOmnivore   0.017902   0.006606   2.710  0.00675 ** 
+(Intercept)            -0.003204   0.003500  -0.915  0.36001    
+Trophic.LevelHerbivore -0.118721   0.006956 -17.068  &lt; 2e-16 ***
+Trophic.LevelOmnivore   0.017880   0.006606   2.707  0.00681 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Residual standard error: 0.2165 on 6611 degrees of freedom
-Multiple R-squared:  0.05001,   Adjusted R-squared:  0.04972 
+Multiple R-squared:  0.05001,   Adjusted R-squared:  0.04973 
 F-statistic:   174 on 2 and 6611 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># by combination of predictors</span></span>
-<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>p5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> pass, <span class="fu">aes</span>(<span class="at">x =</span> Primary.Lifestyle, <span class="at">y =</span> relBeak, <span class="at">fill =</span> Trophic.Level)) <span class="sc">+</span></span>
-<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
-<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Relative Beak Length by Lifestyle and Trophic Level"</span>)</span>
-<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>p5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># by combination of predictors</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>p5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> pass, <span class="fu">aes</span>(<span class="at">x =</span> Primary.Lifestyle, <span class="at">y =</span> relBeak, <span class="at">fill =</span> Trophic.Level)) <span class="sc">+</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Relative Beak Length by Lifestyle and Trophic Level"</span>)</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>p5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1026,14 +1020,14 @@ F-statistic:   174 on 2 and 6611 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
-<p>Interpret the model output: Model 5 (m5): F-statistic = 78.57 with a p-value &lt; 2.2e-16 indicates there is a significant association between Primary.Lifestyle and relative beak length. Terrestrial and Generalist birds have significantly shorter relative beak lengths compared to the reference category (“Aeridl”), with p-values &lt; 2e-16. Model 6 (m6): F-statistic = 174 with a p-value &lt; 2.2e-16 indicates there is a significant association between Trophic.Level and relative beak length. Herbivorous birds have significantly shorter beaks than the reference category (“Carnivores”), with a p-value &lt; 2e-16. Omnivorous birds have longer beaks than the reference category (p = 0.00675).</p>
+<p>Interpret the model output: Model 5 (m5): F-statistic = 78.57 with a p-value &lt; 2.2e-16 indicates there is a significant association between Primary.Lifestyle and relative beak length. Terrestrial and Generalist birds have significantly shorter relative beak lengths compared to the reference category (“Aerial”), with p-values &lt; 2e-16. Model 6 (m6): F-statistic = 174 with a p-value &lt; 2.2e-16 indicates there is a significant association between Trophic.Level and relative beak length. Herbivorous birds have significantly shorter beaks than the reference category (“Carnivores”), with a p-value &lt; 2e-16. Omnivorous birds have longer beaks than the reference category (p = 0.00675).</p>
 </section>
 <section id="step-5" class="level3">
 <h3 class="anchored" data-anchor-id="step-5">Step 5:</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>m7 <span class="ot">&lt;-</span> <span class="fu">lm</span>(relBeak <span class="sc">~</span> Primary.Lifestyle <span class="sc">+</span> Trophic.Level,</span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">data =</span> pass)</span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m7)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>m7 <span class="ot">&lt;-</span> <span class="fu">lm</span>(relBeak <span class="sc">~</span> Primary.Lifestyle <span class="sc">+</span> Trophic.Level,</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">data =</span> pass)</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m7)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1041,32 +1035,32 @@ lm(formula = relBeak ~ Primary.Lifestyle + Trophic.Level, data = pass)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--0.65365 -0.13333 -0.02251  0.10310  1.20180 
+-0.65362 -0.13329 -0.02288  0.10267  1.20175 
 
 Coefficients:
                               Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)                   0.026196   0.003779   6.932 4.56e-12 ***
-Primary.LifestyleTerrestrial -0.073579   0.006871 -10.709  &lt; 2e-16 ***
-Primary.LifestyleGeneralist  -0.074182   0.008514  -8.713  &lt; 2e-16 ***
-Trophic.LevelHerbivore       -0.126397   0.006766 -18.681  &lt; 2e-16 ***
-Trophic.LevelOmnivore         0.012140   0.006455   1.881     0.06 .  
+(Intercept)                  -0.349531   0.020956 -16.679   &lt;2e-16 ***
+Primary.LifestyleInsessorial  0.375698   0.021294  17.644   &lt;2e-16 ***
+Primary.LifestyleTerrestrial  0.302095   0.021941  13.769   &lt;2e-16 ***
+Primary.LifestyleGeneralist   0.301505   0.022580  13.353   &lt;2e-16 ***
+Trophic.LevelHerbivore       -0.126405   0.006761 -18.697   &lt;2e-16 ***
+Trophic.LevelOmnivore         0.012117   0.006449   1.879   0.0603 .  
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.2097 on 6509 degrees of freedom
-  (100 observations deleted due to missingness)
-Multiple R-squared:  0.08034,   Adjusted R-squared:  0.07978 
-F-statistic: 142.2 on 4 and 6509 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 0.2096 on 6608 degrees of freedom
+Multiple R-squared:   0.11, Adjusted R-squared:  0.1094 
+F-statistic: 163.4 on 5 and 6608 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<p>Conclusion: Overall Model Significance The F-statistic is 142.2, p-value &lt; 2.2e-16 suggests that Primary.Lifestyle and Trophic.Level significantly influence Relative Beak Length. The low R-squared (0.08034) suggests that only about 8% of the variation in relative beak length is explained by these predictors. Base level is Aeridl Effect of Primary.Lifestyle: Terrestrial birds have a significantly lower relative beak length compared to the reference category. Generalist birds also have a significantly lower relative beak length.</p>
+<p>Conclusion: Overall Model Significance The F-statistic is 163.4, p-value &lt; 2.2e-16 suggests that Primary.Lifestyle and Trophic.Level significantly influence Relative Beak Length. The low R-squared (0.11) suggests that only about 11% of the variation in relative beak length is explained by these predictors. Base level is Aeridl Effect of Primary.Lifestyle: Terrestrial birds have a significantly lower relative beak length compared to the reference category. Generalist birds also have a significantly lower relative beak length.</p>
 <p>Effect of Trophic.Level: Herbivores have significantly shorter relative beak lengths than the reference category (“Carnivores”). Omnivores show a weak association (p = 0.06), meaning their effect on beak length may not be as strong.</p>
 </section>
 <section id="step-6" class="level3">
 <h3 class="anchored" data-anchor-id="step-6">Step 6:</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>m8 <span class="ot">&lt;-</span> <span class="fu">lm</span>(relBeak <span class="sc">~</span> Primary.Lifestyle <span class="sc">+</span> Trophic.Level <span class="sc">+</span> Primary.Lifestyle<span class="sc">:</span>Trophic.Level, <span class="at">data =</span> pass)</span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m8)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>m8 <span class="ot">&lt;-</span> <span class="fu">lm</span>(relBeak <span class="sc">~</span> Primary.Lifestyle <span class="sc">+</span> Trophic.Level <span class="sc">+</span> Primary.Lifestyle<span class="sc">:</span>Trophic.Level, <span class="at">data =</span> pass)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m8)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1075,52 +1069,57 @@ lm(formula = relBeak ~ Primary.Lifestyle + Trophic.Level + Primary.Lifestyle:Tro
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--0.64623 -0.12862 -0.02062  0.10151  1.21924 
+-0.64615 -0.12838 -0.02077  0.10065  1.21919 
 
-Coefficients:
-                                                     Estimate Std. Error
-(Intercept)                                          0.008757   0.003970
-Primary.LifestyleTerrestrial                        -0.001114   0.008798
-Primary.LifestyleGeneralist                         -0.028161   0.012217
-Trophic.LevelHerbivore                              -0.073862   0.007899
-Trophic.LevelOmnivore                                0.044472   0.007603
-Primary.LifestyleTerrestrial:Trophic.LevelHerbivore -0.201155   0.017510
-Primary.LifestyleGeneralist:Trophic.LevelHerbivore  -0.150823   0.022057
-Primary.LifestyleTerrestrial:Trophic.LevelOmnivore  -0.155272   0.017269
-Primary.LifestyleGeneralist:Trophic.LevelOmnivore   -0.056289   0.019256
-                                                    t value Pr(&gt;|t|)    
-(Intercept)                                           2.206  0.02742 *  
-Primary.LifestyleTerrestrial                         -0.127  0.89924    
-Primary.LifestyleGeneralist                          -2.305  0.02120 *  
-Trophic.LevelHerbivore                               -9.351  &lt; 2e-16 ***
-Trophic.LevelOmnivore                                 5.849 5.18e-09 ***
-Primary.LifestyleTerrestrial:Trophic.LevelHerbivore -11.488  &lt; 2e-16 ***
-Primary.LifestyleGeneralist:Trophic.LevelHerbivore   -6.838 8.77e-12 ***
-Primary.LifestyleTerrestrial:Trophic.LevelOmnivore   -8.992  &lt; 2e-16 ***
-Primary.LifestyleGeneralist:Trophic.LevelOmnivore    -2.923  0.00348 ** 
+Coefficients: (2 not defined because of singularities)
+                                                    Estimate Std. Error t value
+(Intercept)                                         -0.34953    0.02066 -16.921
+Primary.LifestyleInsessorial                         0.35826    0.02103  17.032
+Primary.LifestyleTerrestrial                         0.35711    0.02210  16.161
+Primary.LifestyleGeneralist                          0.33008    0.02367  13.948
+Trophic.LevelHerbivore                              -0.22466    0.02058 -10.915
+Trophic.LevelOmnivore                               -0.01185    0.01768  -0.670
+Primary.LifestyleInsessorial:Trophic.LevelHerbivore  0.15077    0.02204   6.840
+Primary.LifestyleTerrestrial:Trophic.LevelHerbivore -0.05032    0.02584  -1.948
+Primary.LifestyleGeneralist:Trophic.LevelHerbivore        NA         NA      NA
+Primary.LifestyleInsessorial:Trophic.LevelOmnivore   0.05630    0.01925   2.925
+Primary.LifestyleTerrestrial:Trophic.LevelOmnivore  -0.09895    0.02351  -4.209
+Primary.LifestyleGeneralist:Trophic.LevelOmnivore         NA         NA      NA
+                                                    Pr(&gt;|t|)    
+(Intercept)                                          &lt; 2e-16 ***
+Primary.LifestyleInsessorial                         &lt; 2e-16 ***
+Primary.LifestyleTerrestrial                         &lt; 2e-16 ***
+Primary.LifestyleGeneralist                          &lt; 2e-16 ***
+Trophic.LevelHerbivore                               &lt; 2e-16 ***
+Trophic.LevelOmnivore                                0.50270    
+Primary.LifestyleInsessorial:Trophic.LevelHerbivore 8.65e-12 ***
+Primary.LifestyleTerrestrial:Trophic.LevelHerbivore  0.05151 .  
+Primary.LifestyleGeneralist:Trophic.LevelHerbivore        NA    
+Primary.LifestyleInsessorial:Trophic.LevelOmnivore   0.00345 ** 
+Primary.LifestyleTerrestrial:Trophic.LevelOmnivore  2.60e-05 ***
+Primary.LifestyleGeneralist:Trophic.LevelOmnivore         NA    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.2067 on 6505 degrees of freedom
-  (100 observations deleted due to missingness)
-Multiple R-squared:  0.1074,    Adjusted R-squared:  0.1063 
-F-statistic: 97.79 on 8 and 6505 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 0.2066 on 6604 degrees of freedom
+Multiple R-squared:  0.1358,    Adjusted R-squared:  0.1346 
+F-statistic: 115.3 on 9 and 6604 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<p>Interpret Model: Residual standard error (0.2067) is slightly lower than Step 5, indicating a marginal improvement in model fit. Multiple R-squared (0.1074) is higher than Step 5, suggesting that adding interactions explains more variation.</p>
-<p>F-statistic: 97.79, p-value &lt; 2.2e-16, confirming that at least one predictor significantly contributes to the model.</p>
-<p>Primary.Lifestyle: Aeridl is the base level. Terrestrial birds do not significantly differ from the base level (p = 0.899). Generalist birds have significantly shorter beak lengths compared to the base level (p = 0.021).</p>
-<p>Trophic.Level: Carnivore is the base level. Herbivores have significantly shorter beaks than the base level (p &lt; 2e-16). Omnivores have significantly longer beaks than the base level (p = 5.18e-09).</p>
+<p>Interpret Model: Residual standard error (0.2066) is slightly lower than Step 5, indicating a marginal improvement in model fit. Multiple R-squared (0.1358) is higher than Step 5, suggesting that adding interactions explains more variation.</p>
+<p>F-statistic: 115.3, p-value &lt; 2.2e-16, confirming that at least one predictor significantly contributes to the model.</p>
+<p>Primary.Lifestyle: Aerial is the base level. Insessorial, Terrestrial and Generalist birds are significant different from the base level (p &lt;0.05).</p>
+<p>Trophic.Level: Carnivore is the base level. Herbivores have significantly shorter beaks than the base level (p &lt; 2e-16). Omnivores is not significant different from base level (p = 0.5).</p>
 <ol start="2" type="1">
 <li>Interaction Effects: effect of Trophic.Level depends on Primary.Lifestyle:</li>
 </ol>
-<p>Terrestrial × Herbivore(p &lt; 2e-16), Generalist × Herbivore (p = 8.77e-12), Terrestrial × Omnivore (p &lt; 2e-16), indicating , meaning interaction of Trophic.Level and Primary.Lifestyle have significantly shorter beaks than expected from the individual effects alone. Generalist × Omnivore: Significant negative effect (p = 0.00348), though smaller than the other interactions.</p>
+<p>Terrestrial × Omnivore (p = 0.051), Insessorial × Herbivore (p = 8.65e-12), Insessorial x Omnivore (p = 0.00345), indicating , meaning interaction of Trophic.Level and Primary.Lifestyle have significantly different beaks than expected from the individual effects alone. Terrestrial x Herbivore: p-value = 0.051&gt; 0.05 not significant interaction.</p>
 </section>
 <section id="step-7" class="level3">
 <h3 class="anchored" data-anchor-id="step-7">Step 7:</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">interaction.plot</span>(<span class="at">x.factor =</span> pass<span class="sc">$</span>Primary.Lifestyle, <span class="at">xlab =</span> <span class="st">"Primary Lifestyle"</span>, <span class="at">trace.factor =</span> pass<span class="sc">$</span>Trophic.Level, <span class="at">trace.label =</span> <span class="st">"Trophic Level"</span>,</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">response =</span> pass<span class="sc">$</span>relBeak, <span class="at">fun =</span> base<span class="sc">::</span>mean, <span class="at">ylab =</span> <span class="st">"RelBeak"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">interaction.plot</span>(<span class="at">x.factor =</span> pass<span class="sc">$</span>Primary.Lifestyle, <span class="at">xlab =</span> <span class="st">"Primary Lifestyle"</span>, <span class="at">trace.factor =</span> pass<span class="sc">$</span>Trophic.Level, <span class="at">trace.label =</span> <span class="st">"Trophic Level"</span>,</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">response =</span> pass<span class="sc">$</span>relBeak, <span class="at">fun =</span> base<span class="sc">::</span>mean, <span class="at">ylab =</span> <span class="st">"RelBeak"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1133,45 +1132,45 @@ F-statistic: 97.79 on 8 and 6505 DF,  p-value: &lt; 2.2e-16</code></pre>
 <section id="step-8" class="level3">
 <h3 class="anchored" data-anchor-id="step-8">Step 8:</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Caculate standard devidations</span></span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>stats_Trophic.Level <span class="ot">&lt;-</span> pass <span class="sc">|&gt;</span></span>
-<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Trophic.Level) <span class="sc">|&gt;</span></span>
-<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="st">`</span><span class="at">mean(relBeak)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">mean</span>(relBeak), <span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sd</span>(relBeak))</span>
-<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>stats_Trophic.Level</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Caculate standard devidations</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>stats_Trophic.Level <span class="ot">&lt;-</span> pass <span class="sc">|&gt;</span></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Trophic.Level) <span class="sc">|&gt;</span></span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="st">`</span><span class="at">mean(relBeak)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">mean</span>(relBeak), <span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sd</span>(relBeak))</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>stats_Trophic.Level</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 3
   Trophic.Level `mean(relBeak)` `sd(relBeak)`
   &lt;chr&gt;                   &lt;dbl&gt;         &lt;dbl&gt;
-1 Carnivore            -0.00317         0.193
+1 Carnivore            -0.00320         0.193
 2 Herbivore            -0.122           0.231
 3 Omnivore              0.0147          0.257</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>stats_Primary.Lifestyle <span class="ot">&lt;-</span> pass <span class="sc">|&gt;</span></span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Primary.Lifestyle) <span class="sc">|&gt;</span></span>
-<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="st">`</span><span class="at">mean(relBeak)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">mean</span>(relBeak), <span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sd</span>(relBeak))</span>
-<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>stats_Primary.Lifestyle</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>stats_Primary.Lifestyle <span class="ot">&lt;-</span> pass <span class="sc">|&gt;</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Primary.Lifestyle) <span class="sc">|&gt;</span></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="st">`</span><span class="at">mean(relBeak)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">mean</span>(relBeak), <span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sd</span>(relBeak))</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>stats_Primary.Lifestyle</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
   Primary.Lifestyle `mean(relBeak)` `sd(relBeak)`
   &lt;fct&gt;                       &lt;dbl&gt;         &lt;dbl&gt;
-1 Insessorial               0.00392         0.224
-2 Terrestrial              -0.0703          0.206
-3 Generalist               -0.0702          0.180
-4 &lt;NA&gt;                     -0.350           0.199</code></pre>
+1 Aerial                   -0.350           0.199
+2 Insessorial               0.00388         0.224
+3 Terrestrial              -0.0703          0.206
+4 Generalist               -0.0703          0.180</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check that variances are roughly equal (ratio of max/min is &lt;2)</span></span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(stats_Trophic.Level<span class="sc">$</span><span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span>)<span class="sc">/</span><span class="fu">min</span>(stats_Trophic.Level<span class="sc">$</span><span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check that variances are roughly equal (ratio of max/min is &lt;2)</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(stats_Trophic.Level<span class="sc">$</span><span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span>)<span class="sc">/</span><span class="fu">min</span>(stats_Trophic.Level<span class="sc">$</span><span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.336194</code></pre>
+<pre><code>[1] 1.336227</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(stats_Primary.Lifestyle<span class="sc">$</span><span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span>)<span class="sc">/</span><span class="fu">min</span>(stats_Primary.Lifestyle<span class="sc">$</span><span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(stats_Primary.Lifestyle<span class="sc">$</span><span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span>)<span class="sc">/</span><span class="fu">min</span>(stats_Primary.Lifestyle<span class="sc">$</span><span class="st">`</span><span class="at">sd(relBeak)</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.243933</code></pre>
+<pre><code>[1] 1.244017</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check for normality of data overall</span></span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak)</span>
-<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check for normality of data overall</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak)</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1179,11 +1178,11 @@ F-statistic: 97.79 on 8 and 6505 DF,  p-value: &lt; 2.2e-16</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co">#check for normality of data within each group</span></span>
-<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Trophic.Level</span></span>
-<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Carnivore"</span>], <span class="at">main =</span> <span class="st">"Carnivore"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
-<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Carnivore"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co">#check for normality of data within each group</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Trophic.Level</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Carnivore"</span>], <span class="at">main =</span> <span class="st">"Carnivore"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Carnivore"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1191,9 +1190,9 @@ F-statistic: 97.79 on 8 and 6505 DF,  p-value: &lt; 2.2e-16</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Omnivore"</span>], <span class="at">main =</span> <span class="st">"Omnivore"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
-<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Omnivore"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Omnivore"</span>], <span class="at">main =</span> <span class="st">"Omnivore"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Omnivore"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1201,9 +1200,9 @@ F-statistic: 97.79 on 8 and 6505 DF,  p-value: &lt; 2.2e-16</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Herbivore"</span>], <span class="at">main =</span> <span class="st">"Herbivore"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
-<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Herbivore"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Herbivore"</span>], <span class="at">main =</span> <span class="st">"Herbivore"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Herbivore"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1211,10 +1210,10 @@ F-statistic: 97.79 on 8 and 6505 DF,  p-value: &lt; 2.2e-16</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Primary.Lifestyle</span></span>
-<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Aquatic"</span>], <span class="at">main =</span> <span class="st">"Aquatic"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
-<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Aquatic"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Primary.Lifestyle</span></span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Aquatic"</span>], <span class="at">main =</span> <span class="st">"Aquatic"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Aquatic"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1222,9 +1221,9 @@ F-statistic: 97.79 on 8 and 6505 DF,  p-value: &lt; 2.2e-16</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Terrestrial"</span>], <span class="at">main =</span> <span class="st">"Terrestrial"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
-<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Terrestrial"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Terrestrial"</span>], <span class="at">main =</span> <span class="st">"Terrestrial"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Terrestrial"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1232,9 +1231,9 @@ F-statistic: 97.79 on 8 and 6505 DF,  p-value: &lt; 2.2e-16</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Insessorial"</span>], <span class="at">main =</span> <span class="st">"Insessorial"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
-<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Insessorial"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Insessorial"</span>], <span class="at">main =</span> <span class="st">"Insessorial"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Insessorial"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1242,9 +1241,9 @@ F-statistic: 97.79 on 8 and 6505 DF,  p-value: &lt; 2.2e-16</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Generalist"</span>], <span class="at">main =</span> <span class="st">"Generalist"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
-<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Generalist"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Generalist"</span>], <span class="at">main =</span> <span class="st">"Generalist"</span>, <span class="at">xlab =</span> <span class="st">"relBeak"</span>)</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relBeak[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Generalist"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
